@@ -1,11 +1,17 @@
-import http from 'http';
+import https from 'https';
 import fs from 'fs';
 import path from 'path';
 
 const PORT = 3000;
 const BASE_DIR = path.join(process.cwd(), 'cloud');
 
-const server = http.createServer((req, res) => {
+// Load SSL certificate and private key
+const options = {
+    key:  fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert'),
+};
+
+const server = https.createServer(options, (req, res) => {
     const filePath = path.join(BASE_DIR, decodeURIComponent(req.url || '/'));
     const safePath = path.normalize(filePath).startsWith(BASE_DIR) ? filePath : BASE_DIR;
 
@@ -47,5 +53,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`HTTPS Server is running on https://localhost:${PORT}`);
 });
