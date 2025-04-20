@@ -17,3 +17,6 @@ pids
 storage/
 files/
 drive/
+server
+server.key
+server.cert
