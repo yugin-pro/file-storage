@@ -42,7 +42,10 @@ const server = https.createServer(options, (req, res) => {
 
         const contentType = mimeTypes[ext] || 'application/octet-stream';
 
-        res.writeHead(200, { 'Content-Type': contentType });
+        res.writeHead(200, { 
+            'Content-Type': contentType,
+            'Access-Control-Allow-Origin': '*'
+        });
         const readStream = fs.createReadStream(safePath);
         readStream.pipe(res);
         readStream.on('error', () => {
