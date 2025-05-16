@@ -5,16 +5,11 @@ import fs from 'fs/promises';
 import path from 'path';
 import {createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
+import conf from './app.conf.js';
 
 const server = http.createServer(handleRequest);
 
-const PORT = 3020;
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
-
-const BASIC_AUTH_USER = 'aladdin';
-const BASIC_AUTH_PASS = 'opensesame';
+server.listen(conf.PORT);
 
 function parseBasicAuth(header) {
   if (!header || !header.startsWith('Basic ')) return null;
@@ -30,8 +25,8 @@ async function handleRequest(req, res) {
   const credentials = parseBasicAuth(authHeader);
   if (
     !credentials ||
-    credentials.user !== BASIC_AUTH_USER ||
-    credentials.pass !== BASIC_AUTH_PASS
+    credentials.user !== conf.BASIC_AUTH_USER ||
+    credentials.pass !== conf.BASIC_AUTH_PASS
   ) {
     res.writeHead(401, { 'WWW-Authenticate': 'Basic realm="File Storage"' });
     res.end('Authentication required');
@@ -40,7 +35,7 @@ async function handleRequest(req, res) {
 
   const urlPath = new URL(req.url, `http://${req.headers.host}`).pathname;
   const sanitizedPath = path.normalize(urlPath).replace(/^(\.\.[\/\\])+/, '');
-  const filePath = path.join('/home/dm/Projects/on-premis-dwh', sanitizedPath);
+  const filePath = path.join(conf.CLOUD, sanitizedPath);
 
   const directory = path.dirname(filePath);
   try {
