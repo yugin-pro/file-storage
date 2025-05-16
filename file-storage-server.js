@@ -53,6 +53,7 @@ async function handleRequest(req, res) {
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'text/plain' });
       res.end('Error writing file');
+      console.log(err);
     }
   } else {
     res.writeHead(405, { 'Content-Type': 'text/plain' });
