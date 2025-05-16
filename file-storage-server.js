@@ -6,7 +6,6 @@ import path from 'path';
 import {createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import conf from './app.conf.js';
-import { Transform } from 'stream';
 
 const server = http.createServer(handleRequest);
 
@@ -43,7 +42,7 @@ async function handleRequest(req, res) {
     await fs.access(directory);
   } catch (err) {
     await fs.mkdir(directory, { recursive: true });
-    console.log(err);
+    logger(err);
   }
 
   if (req.method === 'POST') {
@@ -52,15 +51,25 @@ async function handleRequest(req, res) {
       await pipeline(req, writeStream);
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end('File written successfully');
+      logger(`File written: ${filePath}`);
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'text/plain' });
       res.end('Error writing file');
-      console.log(err);
+      logger(err);
     }
     console.log('transfered');
   } else {
     res.writeHead(405, { 'Content-Type': 'text/plain' });
     res.end('Method not allowed');
-    console.log('Method not allowed');
+     logger(`Method not allowed: ${req.headers}`);
   }
+}
+
+function logger(message) {
+  const logFile = path.join(conf.CLOUD, 'server.log');
+  const timestamp = new Date().toISOString();
+  const logMessage = `[${timestamp}] ${message}\n`;
+  fs.appendFile(logFile, logMessage).catch(err => {
+    console.error('Failed to write log:', err);
+  });
 }
