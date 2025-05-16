@@ -6,6 +6,7 @@ import path from 'path';
 import {createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import conf from './app.conf.js';
+import { Transform } from 'stream';
 
 const server = http.createServer(handleRequest);
 
@@ -55,8 +56,10 @@ async function handleRequest(req, res) {
       res.end('Error writing file');
       console.log(err);
     }
+    console.log('transfered');
   } else {
     res.writeHead(405, { 'Content-Type': 'text/plain' });
     res.end('Method not allowed');
+    console.log(err);
   }
 }
