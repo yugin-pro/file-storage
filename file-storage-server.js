@@ -43,6 +43,7 @@ async function handleRequest(req, res) {
     await fs.access(directory);
   } catch (err) {
     await fs.mkdir(directory, { recursive: true });
+    console.log(err);
   }
 
   if (req.method === 'POST') {
@@ -60,6 +61,6 @@ async function handleRequest(req, res) {
   } else {
     res.writeHead(405, { 'Content-Type': 'text/plain' });
     res.end('Method not allowed');
-    console.log(err);
+    console.log('Method not allowed');
   }
 }
